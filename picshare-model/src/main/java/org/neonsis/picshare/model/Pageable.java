@@ -5,6 +5,7 @@ import org.neonsis.picshare.exception.ValidationException;
 public class Pageable {
 
     private final int page;
+
     private final int limit;
 
     public Pageable(int limit) {

@@ -1,6 +1,9 @@
 package org.neonsis.picshare.model.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "photo", schema = "public")
@@ -12,26 +15,35 @@ public class Photo extends AbstractDomain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Size(max = 255)
     @Basic(optional = false)
     @Column(name = "small_url", nullable = false, length = 255, updatable = false)
     private String smallUrl;
 
+    @NotNull
+    @Size(max = 255)
     @Basic(optional = false)
     @Column(name = "large_url", nullable = false, length = 255, updatable = false)
     private String largeUrl;
 
+    @NotNull
+    @Size(max = 255)
     @Basic(optional = false)
     @Column(name = "original_url", nullable = false, length = 255, updatable = false)
     private String originalUrl;
 
+    @Min(0)
     @Basic(optional = false)
     @Column(nullable = false)
     private long views;
 
+    @Min(0)
     @Basic(optional = false)
     @Column(nullable = false)
     private long downloads;
 
+    @NotNull
     @JoinColumn(name = "profile_id", referencedColumnName = "id", nullable = false, updatable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Profile profile;

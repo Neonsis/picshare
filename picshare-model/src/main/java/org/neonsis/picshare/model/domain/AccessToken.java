@@ -1,6 +1,7 @@
 package org.neonsis.picshare.model.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "access_token", schema = "public")
@@ -9,8 +10,10 @@ public class AccessToken extends AbstractDomain {
     @Id
     @Basic(optional = false)
     @Column(name = "token", unique = true, nullable = false)
+    @NotNull
     private String token;
 
+    @NotNull
     @JoinColumn(name = "profile_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Profile profile;

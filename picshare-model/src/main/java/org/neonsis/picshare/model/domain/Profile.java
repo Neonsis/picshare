@@ -1,6 +1,12 @@
 package org.neonsis.picshare.model.domain;
 
+import org.neonsis.picshare.model.validation.EnglishLanguage;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "profile", schema = "public", uniqueConstraints = {
@@ -15,38 +21,58 @@ public class Profile extends AbstractDomain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Size(max = 255)
     @Basic(optional = false)
     @Column(name = "uid", unique = true, nullable = false, length = 255, updatable = false)
     private String uid;
 
+    @Email
+    @NotNull
+    @Size(max = 100)
     @Basic(optional = false)
     @Column(name = "email", unique = true, nullable = false, length = 100, updatable = false)
     private String email;
 
+    @NotNull
+    @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
+    @Size(min = 1, max = 60)
     @Basic(optional = false)
     @Column(name = "first_name", nullable = false, length = 60)
     private String firstName;
 
+    @NotNull
+    @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
+    @Size(min = 1, max = 60)
     @Basic(optional = false)
     @Column(name = "last_name", nullable = false, length = 60)
     private String lastName;
 
+    @NotNull
+    @Size(max = 255)
     @Basic(optional = false)
     @Column(name = "avatar_url", nullable = false, length = 255)
     private String avatarUrl;
 
+    @NotNull
+    @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
+    @Size(min = 3, max = 100)
     @Basic(optional = false)
     @Column(name = "job_title", nullable = false, length = 100)
     private String jobTitle;
 
+    @NotNull
+    @Size(min = 5, max = 100)
     @Basic(optional = false)
     @Column(name = "location", nullable = false, length = 100)
     private String location;
 
+    @Min(0)
     @Basic(optional = false)
     @Column(name = "photo_count", nullable = false)
     private int photoCount;
 
+    @Min(0)
     @Basic(optional = false)
     @Column(name = "rating", nullable = false)
     private int rating;

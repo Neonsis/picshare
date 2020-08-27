@@ -6,7 +6,9 @@ import java.util.Objects;
 public class OriginalImage {
 
     private final InputStream in;
+
     private final long size;
+
     private final String name;
 
     public OriginalImage(InputStream in, long size, String name) {
