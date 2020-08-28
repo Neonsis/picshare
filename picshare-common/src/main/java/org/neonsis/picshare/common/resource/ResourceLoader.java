@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.resource;
+package org.neonsis.picshare.common.resource;
 
 import javax.enterprise.inject.Vetoed;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.producer;
+package org.neonsis.picshare.common.producer;
 
 import org.neonsis.picshare.common.annotation.cdi.PropertiesSource;
 
@@ -8,7 +8,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.Properties;
 
 @Dependent
-public class PropertySourceProducer extends AbstractPropertiesLoader {
+public class PropertiesSourceProducer extends AbstractPropertiesLoader {
 
     @Produces
     @PropertiesSource("")

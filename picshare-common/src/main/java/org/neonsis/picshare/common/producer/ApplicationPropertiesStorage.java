@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.producer;
+package org.neonsis.picshare.common.producer;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -35,14 +35,14 @@ public class ApplicationPropertiesStorage extends AbstractPropertiesLoader {
             String key = String.valueOf(entry.getKey());
             if (key.startsWith(APPLICATION_CONFIG_PROPERTY_PREFIX)) {
                 applicationProperties.setProperty(key, String.valueOf(entry.getValue()));
-                logger.log(Level.INFO, "Overridden application properties, {0} defined in the {1}", new String[]{key, description});
+                logger.log(Level.INFO, "Overridden application property {0}, defined in the {1}", new String[]{key, description});
             } else if (APPLICATION_CONFIG_FILE.equals(key)) {
                 configFilePath = String.valueOf(entry.getValue());
             }
         }
         if (configFilePath != null && Files.exists(Paths.get(configFilePath))) {
             loadProperties(applicationProperties, configFilePath);
-            logger.log(Level.INFO, "Overridden application properties, {0} defined in the {1}", new String[]{configFilePath, description});
+            logger.log(Level.INFO, "Overridden application property from file {0}, defined in the {1}", new String[]{configFilePath, description});
         }
     }
 }

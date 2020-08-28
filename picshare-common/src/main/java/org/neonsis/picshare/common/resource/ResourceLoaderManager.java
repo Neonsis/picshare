@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.resource;
+package org.neonsis.picshare.common.resource;
 
 import org.neonsis.picshare.exception.ConfigException;
 
@@ -22,6 +22,7 @@ public class ResourceLoaderManager {
                 return resourceLoader.getInputStream(resourceName);
             }
         }
+
         throw new ConfigException("Can't get input stream for resource: " + resourceName);
     }
 }

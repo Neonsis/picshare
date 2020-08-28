@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.resource;
+package org.neonsis.picshare.common.resource;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.File;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 @ApplicationScoped
 public class FileResourceLoader implements ResourceLoader {
+
     @Override
     public boolean isSupport(String resourceName) {
         try {

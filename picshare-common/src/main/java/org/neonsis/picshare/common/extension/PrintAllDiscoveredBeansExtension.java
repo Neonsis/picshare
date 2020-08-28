@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.extension;
+package org.neonsis.picshare.common.extension;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.BeanManager;

@@ -1,6 +1,6 @@
-package org.neonsis.picshare.common.annotation.producer;
+package org.neonsis.picshare.common.producer;
 
-import org.neonsis.picshare.common.annotation.resource.ResourceLoaderManager;
+import org.neonsis.picshare.common.resource.ResourceLoaderManager;
 
 import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ abstract class AbstractPropertiesLoader {
             try (InputStream in = resourceLoaderManager.getResourceInputStream(resourceName)) {
                 properties.load(in);
             }
-            logger.log(Level.INFO, "Successful loaded properties from: " + resourceName);
+            logger.log(Level.INFO, "Successful loaded properties from {0}", resourceName);
         } catch (IOException | RuntimeException ex) {
             logger.log(Level.WARNING, "Can't load properties from: " + resourceName, ex);
         }
