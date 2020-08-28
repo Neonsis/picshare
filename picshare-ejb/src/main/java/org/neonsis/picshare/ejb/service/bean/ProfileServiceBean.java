@@ -2,6 +2,7 @@ package org.neonsis.picshare.ejb.service.bean;
 
 import org.neonsis.picshare.common.annotation.cdi.Property;
 import org.neonsis.picshare.common.config.ImageCategory;
+import org.neonsis.picshare.common.model.URLImageResource;
 import org.neonsis.picshare.ejb.repository.ProfileRepository;
 import org.neonsis.picshare.ejb.service.ImageStorageService;
 import org.neonsis.picshare.ejb.service.TranslitConverter;
@@ -72,6 +73,9 @@ public class ProfileServiceBean implements ProfileService {
             setProfileUid(profile);
         }
         profileRepository.create(profile);
+        if (uploadProfileAvatar && profile.getAvatarUrl() != null) {
+            uploadNewAvatar(profile, new URLImageResource(profile.getAvatarUrl()));
+        }
     }
 
     private void setProfileUid(Profile profile) {
