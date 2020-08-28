@@ -11,5 +11,8 @@
     <modules>
         <module>picshare-model</module>
         <module>picshare-common</module>
+        <module>picshare-rest</module>
+        <module>picshare-ejb</module>
+        <module>picshare-ear</module>
     </modules>
 </project>
