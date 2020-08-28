@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <persistence-unit name="net.devstudy.myphotos.pu" transaction-type="JTA">
+    <persistence-unit name="org.neonsis.picshare.pu" transaction-type="JTA">
         <jta-data-source>jdbc/PicsharePhotosDBPool</jta-data-source>
         <mapping-file>META-INF/mapping.xml</mapping-file>
         <class>org.neonsis.picshare.model.domain.AbstractDomain</class>
         <class>org.neonsis.picshare.model.domain.AccessToken</class>
         <class>org.neonsis.picshare.model.domain.Photo</class>
         <class>org.neonsis.picshare.model.domain.Profile</class>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <!-- eclipselink properties (Glassfish) -->
             <property name="eclipselink.logging.level.sql" value="FINE"/>
