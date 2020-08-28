@@ -2,6 +2,8 @@ package org.neonsis.picshare.ejb.service.bean;
 
 import org.neonsis.picshare.ejb.repository.PhotoRepository;
 import org.neonsis.picshare.ejb.repository.ProfileRepository;
+import org.neonsis.picshare.ejb.service.ImageStorageService;
+import org.neonsis.picshare.ejb.service.interceptor.AsyncOperationInterceptor;
 import org.neonsis.picshare.exception.ObjectNotFoundException;
 import org.neonsis.picshare.exception.ValidationException;
 import org.neonsis.picshare.model.*;
@@ -12,6 +14,7 @@ import org.neonsis.picshare.service.PhotoService;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +32,11 @@ public class PhotoServiceBean implements PhotoService {
     @Resource
     private SessionContext sessionContext;
 
+    @EJB
+    private ImageProcessorBean imageProcessorBean;
+
+    @Inject
+    private ImageStorageService imageStorageService;
 
     @Override
     public List<Photo> findProfilePhotos(Long profileId, Pageable pageable) {
@@ -60,33 +68,44 @@ public class PhotoServiceBean implements PhotoService {
         return photo.getLargeUrl();
     }
 
+    public Photo getPhoto(Long photoId) throws ObjectNotFoundException {
+        Optional<Photo> photo = photoRepository.findById(photoId);
+        if (!photo.isPresent()) {
+            throw new ObjectNotFoundException(String.format("Photo not found by id: %s", photoId));
+        }
+        return photo.get();
+    }
+
     @Override
     public OriginalImage downloadOriginalImage(Long photoId) throws ObjectNotFoundException {
         Photo photo = getPhoto(photoId);
         photo.setDownloads(photo.getDownloads() + 1);
         photoRepository.update(photo);
 
-        throw new UnsupportedOperationException("Not impl yet");
-    }
-
-    public Photo getPhoto(Long photoId) throws ObjectNotFoundException {
-        Optional<Photo> photoOptional = photoRepository.findById(photoId);
-        if (!photoOptional.isPresent()) {
-            throw new ObjectNotFoundException("Photo not found by id: " + photoId);
-        }
-        return photoOptional.get();
+        return imageStorageService.getOriginalImage(photo.getOriginalUrl());
     }
 
     @Override
     @Asynchronous
+    @Interceptors(AsyncOperationInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void uploadNewPhoto(Profile currentProfile, ImageResource imageResource, AsyncOperation<Photo> asyncOperation) {
         try {
-            Photo photo = null; // TODO
+            Photo photo = uploadNewPhoto(currentProfile, imageResource);
             asyncOperation.onSuccess(photo);
         } catch (Throwable throwable) {
             sessionContext.setRollbackOnly();
             asyncOperation.onFailed(throwable);
         }
+    }
+
+    public Photo uploadNewPhoto(Profile currentProfile, ImageResource imageResource) {
+        Photo photo = imageProcessorBean.processPhoto(imageResource);
+        photo.setProfile(currentProfile);
+        photoRepository.create(photo);
+        photoRepository.flush();
+        currentProfile.setPhotoCount(photoRepository.countProfilePhotos(currentProfile.getId()));
+        profileRepository.update(currentProfile);
+        return photo;
     }
 }

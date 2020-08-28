@@ -1,7 +1,10 @@
 package org.neonsis.picshare.ejb.service.bean;
 
 import org.neonsis.picshare.common.annotation.cdi.Property;
+import org.neonsis.picshare.common.config.ImageCategory;
 import org.neonsis.picshare.ejb.repository.ProfileRepository;
+import org.neonsis.picshare.ejb.service.ImageStorageService;
+import org.neonsis.picshare.ejb.service.interceptor.AsyncOperationInterceptor;
 import org.neonsis.picshare.exception.ObjectNotFoundException;
 import org.neonsis.picshare.model.AsyncOperation;
 import org.neonsis.picshare.model.ImageResource;
@@ -10,6 +13,7 @@ import org.neonsis.picshare.service.ProfileService;
 
 import javax.ejb.*;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -25,24 +29,30 @@ public class ProfileServiceBean implements ProfileService {
 
     @Inject
     @Property("picshare.profile.avatar.placeholder.url")
-    private String avatarPlaceholderUrl;
+    private String avatarPlaceHolderUrl;
+
+    @EJB
+    private ImageProcessorBean imageProcessorBean;
+
+    @Inject
+    private ImageStorageService imageStorageService;
 
     @Override
     public Profile findById(Long id) throws ObjectNotFoundException {
-        Optional<Profile> profileOptional = profileRepository.findById(id);
-        if (!profileOptional.isPresent()) {
+        Optional<Profile> profile = profileRepository.findById(id);
+        if (!profile.isPresent()) {
             throw new ObjectNotFoundException(String.format("Profile not found by id: %s", id));
         }
-        return profileOptional.get();
+        return profile.get();
     }
 
     @Override
     public Profile findByUid(String uid) throws ObjectNotFoundException {
-        Optional<Profile> profileOptional = profileRepository.findByUid(uid);
-        if (!profileOptional.isPresent()) {
+        Optional<Profile> profile = profileRepository.findByUid(uid);
+        if (!profile.isPresent()) {
             throw new ObjectNotFoundException(String.format("Profile not found by uid: %s", uid));
         }
-        return profileOptional.get();
+        return profile.get();
     }
 
     @Override
@@ -52,12 +62,12 @@ public class ProfileServiceBean implements ProfileService {
 
     @Override
     public void signUp(Profile profile, boolean uploadProfileAvatar) {
-        // TODO
+        profileRepository.create(profile);
     }
 
     @Override
     public void translitSocialProfile(Profile profile) {
-        // TODO
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
@@ -67,6 +77,7 @@ public class ProfileServiceBean implements ProfileService {
 
     @Override
     @Asynchronous
+    @Interceptors(AsyncOperationInterceptor.class)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void uploadNewAvatar(Profile currentProfile, ImageResource imageResource, AsyncOperation<Profile> asyncOperation) {
         try {
@@ -79,12 +90,21 @@ public class ProfileServiceBean implements ProfileService {
     }
 
     public void uploadNewAvatar(Profile currentProfile, ImageResource imageResource) {
-        // TODO
+        String avatarUrl = imageProcessorBean.processProfileAvatar(imageResource);
+        if (ImageCategory.isImageCategoryUrl(currentProfile.getAvatarUrl())) {
+            imageStorageService.deletePublicImage(currentProfile.getAvatarUrl());
+        }
+        currentProfile.setAvatarUrl(avatarUrl);
+        profileRepository.update(currentProfile);
+    }
+
+    public void setAvatarPlaceHolder(Long profileId) {
+        setAvatarPlaceHolder(profileRepository.findById(profileId).get());
     }
 
     public void setAvatarPlaceHolder(Profile currentProfile) {
         if (currentProfile.getAvatarUrl() == null) {
-            currentProfile.setAvatarUrl(avatarPlaceholderUrl);
+            currentProfile.setAvatarUrl(avatarPlaceHolderUrl);
             profileRepository.update(currentProfile);
         }
     }
