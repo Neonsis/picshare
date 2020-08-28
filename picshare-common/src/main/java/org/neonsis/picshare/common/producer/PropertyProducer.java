@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.producer;
+package org.neonsis.picshare.common.producer;
 
 import org.neonsis.picshare.common.annotation.cdi.Property;
 import org.neonsis.picshare.exception.ConfigException;
@@ -16,7 +16,7 @@ public class PropertyProducer {
 
     @Produces
     @Property
-    public String resolverStringPropertyValue(InjectionPoint injectionPoint) {
+    public String resolveStringPropertyValue(InjectionPoint injectionPoint) {
         return resolvePropertyValue(injectionPoint);
     }
 
@@ -26,6 +26,8 @@ public class PropertyProducer {
         return Integer.parseInt(resolvePropertyValue(injectionPoint));
     }
 
+    @Produces
+    @Property
     public boolean resolveBooleanPropertyValue(InjectionPoint injectionPoint) {
         return Boolean.parseBoolean(resolvePropertyValue(injectionPoint));
     }
@@ -40,7 +42,7 @@ public class PropertyProducer {
     private String resolvePropertyValue(String className, String memberName, Property property) {
         String propertyName = getPropertyName(className, memberName, property);
         String propertyValue = applicationPropertiesStorage.getApplicationProperties().getProperty(propertyName);
-        if (propertyValue == null) {
+        if(propertyValue == null) {
             throw new ConfigException(String.format("Can't resolve property: '%s' for injection to %s.%s", propertyName, className, memberName));
         } else {
             return propertyValue;
@@ -49,9 +51,10 @@ public class PropertyProducer {
 
     private String getPropertyName(String className, String memberName, Property property) {
         String value = property.value();
-        if (value.isEmpty()) {
+        if("".equals(value)) {
             return String.format("%s.%s", className, memberName);
+        } else {
+            return value;
         }
-        return value;
     }
 }

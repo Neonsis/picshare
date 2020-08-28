@@ -1,4 +1,4 @@
-package org.neonsis.picshare.common.annotation.producer;
+package org.neonsis.picshare.common.producer;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
