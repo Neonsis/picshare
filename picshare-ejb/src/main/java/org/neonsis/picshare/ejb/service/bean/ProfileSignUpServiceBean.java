@@ -29,6 +29,7 @@ public class ProfileSignUpServiceBean implements ProfileSignUpService, Serializa
     @Override
     public void createSignUpProfile(Profile profile) {
         this.profile = profile;
+        profileService.translitSocialProfile(profile);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.neonsis.picshare.common.annotation.cdi.Property;
 import org.neonsis.picshare.common.config.ImageCategory;
 import org.neonsis.picshare.ejb.repository.ProfileRepository;
 import org.neonsis.picshare.ejb.service.ImageStorageService;
+import org.neonsis.picshare.ejb.service.TranslitConverter;
 import org.neonsis.picshare.ejb.service.impl.ProfileUidServiceManager;
 import org.neonsis.picshare.ejb.service.interceptor.AsyncOperationInterceptor;
 import org.neonsis.picshare.exception.ObjectNotFoundException;
@@ -24,9 +25,6 @@ import java.util.logging.Logger;
 public class ProfileServiceBean implements ProfileService {
 
     @Inject
-    private Logger logger;
-
-    @Inject
     private ProfileRepository profileRepository;
 
     @Inject
@@ -41,6 +39,9 @@ public class ProfileServiceBean implements ProfileService {
 
     @Inject
     private ProfileUidServiceManager profileUidServiceManager;
+
+    @Inject
+    private TranslitConverter translitConverter;
 
     @Override
     public Profile findById(Long id) throws ObjectNotFoundException {
@@ -86,9 +87,11 @@ public class ProfileServiceBean implements ProfileService {
         profile.setUid(profileUidServiceManager.getDefaultUid());
     }
 
-    @Override
     public void translitSocialProfile(Profile profile) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        profile.setFirstName(profile.getFirstName() != null ? translitConverter.translit(profile.getFirstName()) : null);
+        profile.setLastName(profile.getLastName() != null ? translitConverter.translit(profile.getLastName()) : null);
+        profile.setJobTitle(profile.getJobTitle() != null ? translitConverter.translit(profile.getJobTitle()) : null);
+        profile.setLocation(profile.getLocation() != null ? translitConverter.translit(profile.getLocation()) : null);
     }
 
     @Override
