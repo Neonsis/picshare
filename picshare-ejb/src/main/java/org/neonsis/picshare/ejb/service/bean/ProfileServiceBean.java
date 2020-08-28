@@ -4,6 +4,7 @@ import org.neonsis.picshare.common.annotation.cdi.Property;
 import org.neonsis.picshare.common.config.ImageCategory;
 import org.neonsis.picshare.ejb.repository.ProfileRepository;
 import org.neonsis.picshare.ejb.service.ImageStorageService;
+import org.neonsis.picshare.ejb.service.impl.ProfileUidServiceManager;
 import org.neonsis.picshare.ejb.service.interceptor.AsyncOperationInterceptor;
 import org.neonsis.picshare.exception.ObjectNotFoundException;
 import org.neonsis.picshare.model.AsyncOperation;
@@ -14,6 +15,7 @@ import org.neonsis.picshare.service.ProfileService;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -36,6 +38,9 @@ public class ProfileServiceBean implements ProfileService {
 
     @Inject
     private ImageStorageService imageStorageService;
+
+    @Inject
+    private ProfileUidServiceManager profileUidServiceManager;
 
     @Override
     public Profile findById(Long id) throws ObjectNotFoundException {
@@ -62,7 +67,23 @@ public class ProfileServiceBean implements ProfileService {
 
     @Override
     public void signUp(Profile profile, boolean uploadProfileAvatar) {
+        if(profile.getUid() == null) {
+            setProfileUid(profile);
+        }
         profileRepository.create(profile);
+    }
+
+    private void setProfileUid(Profile profile) {
+        List<String> uids = profileUidServiceManager.getProfileUidCandidates(profile.getFirstName(), profile.getLastName());
+        List<String> existUids = profileRepository.findUids(uids);
+        for (String uid : uids) {
+            if (!existUids.contains(uid)) {
+                profile.setUid(uid);
+                return;
+            }
+        }
+
+        profile.setUid(profileUidServiceManager.getDefaultUid());
     }
 
     @Override
