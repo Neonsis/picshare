@@ -1,4 +1,4 @@
-package org.neonsis.picshare.rest;
+package org.neonsis.picshare.rest.config;
 
 public final class Constants {
 
